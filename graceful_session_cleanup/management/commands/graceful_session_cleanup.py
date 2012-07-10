@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 from optparse import make_option
+import datetime
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -26,15 +27,22 @@ class Command(BaseCommand):
         sleep_seconds = int(options['sleep_seconds'])
         delete_count = int(options['delete_count'])
         iteration_count = int(options['iteration_count'])
+        start_at = datetime.datetime.now()
         from django.db import connection
         import time
         cursor = connection.cursor()
         i = 0
+        self.stdout.write("started at %s...\n" % (start_at, ))
         while iteration_count>i:
             i += 1
-            t0 = time.clock()
-            self.stdout.write("starting iteration %s of %s...\n" % (i, iteration_count))
+            iteration_start_at = datetime.datetime.now()
+            self.stdout.write("    started iteration %s of %s...\n" % (i, iteration_count))
             actual_delete_count = cursor.execute("DELETE FROM django_session WHERE expire_date<now() LIMIT %s;", [delete_count])
-            t = time.clock() - t0
-            self.stdout.write("    deleted %s expired sessions in %s seconds in iteration %s of %s. sleeping for %s seconds...\n\n" % (actual_delete_count, t, i, iteration_count, sleep_seconds))
+            iteration_duration = datetime.datetime.now() - iteration_start_at
+            iteration_duration_in_seconds = iteration_duration.seconds + iteration_duration.microseconds / 1E6
+            self.stdout.write("        deleted %s expired sessions in %s seconds in iteration %s of %s.\n" % (actual_delete_count, iteration_duration_in_seconds, i, iteration_count,))
+            self.stdout.write("    finished iteration %s of %s (sleeping for %s seconds)...\n" % (i, iteration_count, sleep_seconds))
             time.sleep(sleep_seconds)
+        end_at = datetime.datetime.now()
+        self.stdout.write("finished at %s after running for %s...\n" % (end_at, end_at-start_at))
+
