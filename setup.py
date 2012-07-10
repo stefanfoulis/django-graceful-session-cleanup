@@ -10,7 +10,7 @@ setup(
     license = 'BSD',
     platforms=['OS Independent'],
     description = "A simple management command that can delete expired sessions from large session tables without killing the site.",
-    long_description = open('README.rst'),
+    long_description = open('README.rst').read(),
     author = 'Stefan Foulis',
     author_email = 'stefan@foulis.ch',
     packages=find_packages(),
