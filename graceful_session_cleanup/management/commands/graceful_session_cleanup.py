@@ -34,10 +34,10 @@ class Command(BaseCommand):
         start_at = datetime.datetime.now()
         blocked_time = datetime.timedelta(seconds=0)
 
-        import ipdb;ipdb.set_trace()
+        self.stdout.write("started at %s...\n" % (start_at, ))
+
         cursor = connection.cursor()
         i = 0
-        self.stdout.write("started at %s...\n" % (start_at, ))
         while iteration_count>i:
             i += 1
             iteration_start_at = datetime.datetime.now()
