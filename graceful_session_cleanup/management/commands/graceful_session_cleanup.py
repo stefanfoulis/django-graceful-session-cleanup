@@ -23,7 +23,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        from django.db import connection
+        from django.db import connection, transaction
         import time
         import datetime
 
@@ -43,6 +43,7 @@ class Command(BaseCommand):
             iteration_start_at = datetime.datetime.now()
             self.stdout.write("    started iteration %s of %s...\n" % (i, iteration_count))
             actual_delete_count = cursor.execute("DELETE FROM django_session WHERE expire_date<now() LIMIT %s;", [delete_count])
+            transaction.commit_unless_managed()
             iteration_duration = datetime.datetime.now() - iteration_start_at
             blocked_time += iteration_duration
             iteration_duration_in_seconds = iteration_duration.seconds + iteration_duration.microseconds / 1E6
