@@ -1,6 +1,8 @@
 django-graceful-session-cleanup
 ===============================
 
+Warning: currently only works with mysql
+
 A simple management command that can delete expired sessions from large session tables without killing the site.
 
 The main use case is if you have a live application with millions of stale sessions in the database. Runnung the
